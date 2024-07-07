@@ -1,0 +1,131 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Constants/color.dart';
+import 'package:flutter_application_1/Views/On_Boarding_Screen/onBoarding_screen.dart';
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _textAnimationController;
+  late Animation<double> _textAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize text animation controller
+    _textAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2), // Text animation duration
+    );
+
+    // Define the text animation
+    _textAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_textAnimationController);
+
+    // Start the text animation
+    _textAnimationController.forward();
+
+    // Navigate to the next screen after text animation completes
+    _textAnimationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OnBoardingScreen(),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _textAnimationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background Color
+          Container(
+            color: Colors.white, // Replace with your desired background color
+          ),
+
+          // Animated Texts with Gradient Color
+          AnimatedBuilder(
+            animation: _textAnimation,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(0.0, 200.0 - (200.0 * _textAnimation.value)),
+                child: Opacity(
+                  opacity: _textAnimation.value,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                            colors: [
+                              secondaryColor,
+                              primaryColor,
+                              // Colors.blue.shade300,
+                              // Colors.blue.shade400,
+                              // Colors.blue.shade500,
+                              // Colors.blue.shade600,
+                              // Colors.blue.shade700,
+                              // Colors.blue.shade800,
+                              // Colors.blue.shade900,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.srcIn,
+                        child: const Text(
+                          'Story',
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return LinearGradient(
+                            colors: [
+                              primaryColor,
+                              secondaryColor,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ).createShader(bounds);
+                        },
+                        blendMode: BlendMode.srcIn,
+                        child: const Text(
+                          'Fusion',
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
